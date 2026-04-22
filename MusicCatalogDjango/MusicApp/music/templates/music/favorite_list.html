@@ -1,0 +1,65 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}Избранные треки{% endblock %}
+
+{% block content %}
+<div class="tracks-page">
+    <h1>Избранные треки</h1>
+
+    <div class="albumList">
+        {% for track in tracks %}
+            <div class="albumCard">
+                <div class="albumCoverCard">
+                    {% if track.cover_image %}
+                        <img src="{{ track.cover_image.url }}" 
+                             class="AlbumCover" 
+                             alt="{{ track.title }}">
+                    {% else %}
+                        <img src="{% static 'blockPhoto.png' %}" 
+                             class="AlbumCover" 
+                             alt="Нет обложки">
+                    {% endif %}
+                </div>
+                <div class="albumCardBody">
+                    <div class="trackHeader">
+                        <div class="trackTitleWrapper">
+                            <h5><a href="{% url 'music:track_detail' track.pk %}">{{ track.title }}</a></h5>
+                            <h4 class="albumLink"><a href="{% url 'music:album_detail' track.album.pk %}">{{ track.album.title }}</a></h4>
+                        </div>
+                        <a href="{% url 'music:toggle_favorite' track.pk %}" class="favorite-btn active">
+                            <i class="fas fa-heart"></i>
+                        </a>
+                    </div>
+                    <span class="MusicianLink"><a href="{% url 'music:musician_detail' track.musician.pk %}">{{ track.musician.name }}</a></span>
+                    <div class="mainCardInf">
+                        {% if track.release_date %}
+                            <p><strong>Год:</strong> {{ track.release_date|date:"Y" }}</p>
+                        {% endif %}
+                        {% if track.genre %}
+                            <p><strong>Жанр:</strong> {{ track.genre.title }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="manipulationPanel">
+                    <button class="play-this" 
+                            data-file="{{ track.file.url }}"
+                            data-title="{{ track.title }}"
+                            data-artist="{{ track.musician.name }}"
+                            data-cover="{% if track.cover_image %}{{ track.cover_image.url }}{% endif %}">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-results">
+                <i class="fas fa-heart"></i>
+                <p>У вас пока нет избранных треков</p>
+                <a href="{% url 'music:track_list' %}" class="btnPrimary" style="margin-top: 4rem;">Добавить треки</a>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <p class="results-count">Всего найдено: {{ tracks|length }} треков</p>
+</div>
+{% endblock %}

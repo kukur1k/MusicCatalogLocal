@@ -1,0 +1,97 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}{{ musician.name }} - Исполнитель{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="back-link">
+        <a href="{% url 'music:musician_list' %}" class="btnSecondary">
+            ← Назад к исполнителям
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-image">
+            {% if musician.cover_image %}
+                <img src="{{ musician.cover_image.url }}" alt="{{ musician.name }}">
+            {% else %}
+                <img src="{% static 'blockPhoto.png' %}" alt="Нет фото">
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+            <h1>{{ musician.name }}</h1>
+            
+            {% if musician.country %}
+                <div class="info-row">
+                    <span class="info-label">Страна</span>
+                    <span class="info-value">{{ musician.country }}</span>
+                </div>
+            {% endif %}
+            
+            {% if musician.start_year %}
+                <div class="info-row">
+                    <span class="info-label">Начало карьеры</span>
+                    <span class="info-value">{{ musician.start_year }}</span>
+                </div>
+            {% endif %}
+            
+            {% if musician.description %}
+                <div class="info-row">
+                    <span class="info-label">Об исполнителе</span>
+                    <span class="info-value">{{ musician.description|linebreaks }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="info-row">
+                <span class="info-label">Количество альбомов</span>
+                <span class="info-value">{{ musician.Albums.count }}</span>
+            </div>
+            
+            <div class="detail-actions">
+                <a href="{% url 'music:musician_update' musician.pk %}" class="moveIcon">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+                <a href="{% url 'music:musician_delete' musician.pk %}" class="moveIcon">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="albums-section">
+        <h2>Альбомы исполнителя</h2>
+        
+        {% if musician.Albums.all %}
+            <div class="albumList">
+                {% for album in musician.Albums.all %}
+                    <div class="albumCard">
+                        <div class="albumCoverCard">
+                            {% if album.cover_image %}
+                                <img src="{{ album.cover_image.url }}" class="AlbumCover" alt="{{ album.title }}">
+                            {% else %}
+                                <img src="{% static 'blockPhoto.png' %}" class="AlbumCover" alt="Нет обложки">
+                            {% endif %}
+                        </div>
+                        <div class="albumCardBody">
+                            <h5><a href="{% url 'music:album_detail' album.pk %}">{{ album.title }}</a></h5>
+                            <div class="mainCardInf">
+                                {% if album.release_date %}
+                                    <p><strong>Год:</strong> {{ album.release_date|date:"Y" }}</p>
+                                {% endif %}
+                                <p><strong>Треков:</strong> {{ album.tracks.count }}</p>
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="noResults">
+                <p>У этого исполнителя пока нет альбомов</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

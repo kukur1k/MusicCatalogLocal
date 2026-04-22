@@ -1,0 +1,52 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}Удаление исполнителя{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="formСard">
+            <h1>Подтверждение удаления</h1>
+            
+            <div class="DeleteCard">
+                <div class="delete-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Вы уверены, что хотите удалить этого исполнителя?</p>
+                </div>
+            
+                <div class="delete-info">
+                    <div class="delete-item">
+                        <span class="delete-label">Имя исполнителя:</span>
+                        <span class="delete-value">{{ musician.name }}</span>
+                    </div>
+                    {% if musician.country %}
+                    <div class="delete-item">
+                        <span class="delete-label">Страна:</span>
+                        <span class="delete-value">{{ musician.country }}</span>
+                    </div>
+                    {% endif %}
+                    {% if musician.start_year %}
+                    <div class="delete-item">
+                        <span class="delete-label">Начало карьеры:</span>
+                        <span class="delete-value">{{ musician.start_year }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="delete-item">
+                        <span class="delete-label">Количество альбомов:</span>
+                        <span class="delete-value">{{ musician.albums.count }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <form method="post" class="delete-form">
+                {% csrf_token %}
+                <div class="formButtons">
+                    <button type="submit" class="btnPrimary">Да, удалить</button>
+                    <a href="{% url 'music:musician_detail' musician.pk %}" class="btnSecondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

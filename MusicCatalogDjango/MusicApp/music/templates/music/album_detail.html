@@ -1,0 +1,99 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}{{ album.title }} - {{ album.musician.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="back-link">
+        <a href="{% url 'music:album_list' %}" class="btnSecondary">
+            ← Назад к альбомам
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-image">
+            {% if album.cover_image %}
+                <img src="{{ album.cover_image.url }}" alt="{{ album.title }}">
+            {% else %}
+                <img src="{% static 'blockPhoto.png' %}" alt="Нет обложки">
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+            <h1>{{ album.title }}</h1>
+            
+            <div class="info-row">
+                <span class="info-label">Исполнитель</span>
+                <span class="info-value">
+                    <a href="{% url 'music:musician_detail' album.musician.pk %}">{{ album.musician.name }}</a>
+                </span>
+            </div>
+            
+            {% if album.release_date %}
+            <div class="info-row">
+                <span class="info-label">Дата выхода</span>
+                <span class="info-value">{{ album.release_date|date:"d.m.Y" }}</span>
+            </div>
+            {% endif %}
+            
+            {% if album.genre %}
+            <div class="info-row">
+                <span class="info-label">Жанр</span>
+                <span class="info-value">{{ album.get_genre_display }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="info-row">
+                <span class="info-label">Количество треков</span>
+                <span class="info-value">{{ album.tracks.count }} треков</span>
+            </div>
+            
+            {% if user.is_superuser %}
+                <div class="detail-actions">
+                    <a href="{% url 'music:album_update' album.pk %}" class="moveIcon">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a href="{% url 'music:album_delete' album.pk %}" class="moveIcon">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="tracks-section">
+        <h2>Список треков</h2>
+        
+        {% if album.tracks.all %}
+            <div class="tracks-list">
+                {% for track in album.tracks.all %}
+                    <div class="track-item">
+                        <div class="track-number">{{ forloop.counter }}</div>
+                        <div class="track-info">
+                            <div class="track-title">
+                                <a href="{% url 'music:track_detail' track.pk %}">{{ track.title }}</a>
+                            </div>
+                        </div>
+                        <div class="track-play">
+                            <button class="play-this" 
+                                    data-file="{{ track.file.url }}"
+                                    data-title="{{ track.title }}"
+                                    data-artist="{{ album.musician.name }}"
+                                    data-cover="{% if album.cover_image %}{{ album.cover_image.url }}{% endif %}">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <i class="fas fa-music"></i>
+                <p>В этом альбоме пока нет треков</p>
+                <a href="{% url 'music:track_create' %}" class="btnPrimary">Добавить трек</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

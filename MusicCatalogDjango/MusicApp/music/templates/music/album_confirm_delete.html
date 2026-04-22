@@ -1,0 +1,48 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}Удаление альбома{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="formСard">
+            <h1>Подтверждение удаления</h1>
+            
+            <div class="DeleteCard">
+                <div class="delete-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Вы уверены, что хотите удалить этот альбом?</p>
+                 </div>
+            
+                <div class="delete-info">
+                    <div class="delete-item">
+                        <span class="delete-label">Название:</span>
+                        <span class="delete-value">{{ album.title }}</span>
+                    </div>
+                    <div class="delete-item">
+                        <span class="delete-label">Исполнитель:</span>
+                        <span class="delete-value">{{ album.musician.name }}</span>
+                    </div>
+                    {% if album.release_date %}
+                    <div class="delete-item">
+                        <span class="delete-label">Год:</span>
+                        <span class="delete-value">{{ album.release_date|date:"Y" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            
+            
+            <form method="post" class="delete-form">
+                {% csrf_token %}
+                <div class="formButtons">
+                    <button type="submit" class="btnPrimary">Да, удалить</button>
+                    <a href="{% url 'music:album_detail' album.pk %}" class="btnSecondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

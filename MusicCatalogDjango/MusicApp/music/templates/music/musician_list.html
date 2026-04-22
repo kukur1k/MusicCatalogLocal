@@ -1,0 +1,73 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}Исполнители{% endblock %}
+
+{% block content %}
+<div class="musicians-page">
+    <h1>Исполнители</h1>
+    
+    {% if user.is_superuser %}
+        <div class="btnPrimaryDiv">
+            <a href="{% url 'music:musician_create' %}" class="btnPrimary">
+                + Добавить исполнителя
+            </a>
+        </div>
+    {% endif %}
+    <div class="searchCard">
+        <h1>Поиск исполнителя</h1>
+        <form method="get">
+            <div class="queryField">
+                {{ form.query }}
+            </div>
+            <div class="enterSearch">
+                <button type="submit" class="btnPrimary">Поиск</button>
+                <a href="{% url 'music:musician_list' %}" class="btnSecondary">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="albumList">
+        {% for musician in musicians %}
+            <div class="albumCard">
+                <div class="albumCoverCard">
+                    {% if musician.cover_image %}
+                        <img src="{{ musician.cover_image.url }}" class="AlbumCover" alt="{{ musician.name }}">
+                    {% else %}
+                        <img src="{% static 'blockPhoto.png' %}" class="AlbumCover" alt="Нет фото">
+                    {% endif %}
+                </div>
+                <div class="albumCardBody">
+                    <h5><a href="{% url 'music:musician_detail' musician.pk%}">{{ musician.name }}</a></h5>
+                    <div class="mainCardInf">
+                        {% if musician.start_year %}
+                            <p><strong>Начало карьеры:</strong> {{ musician.start_year }}</p>
+                        {% endif %}
+                        {% if musician.country %}
+                            <p><strong>Страна:</strong> {{ musician.country }}</p>
+                        {% endif %}
+                        <p><strong>Альбомов:</strong> {{ musician.albums.count }}</p>
+                        <p><strong>Треков:</strong> {{ musician.tracks.count }}</p>
+                    </div>
+                </div>
+                {% if user.is_superuser %}
+                    <div class="manipulationPanel">
+                        <a href="{% url 'music:musician_update' musician.pk %}" class="moveIcon">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
+                        <a href="{% url 'music:musician_delete' musician.pk %}" class="moveIcon">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="no-results">
+                <p>Пока нет исполнителей</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <p class="results-count">Всего найдено: {{ musicians|length }} исполнителей</p>
+</div>
+{% endblock %}

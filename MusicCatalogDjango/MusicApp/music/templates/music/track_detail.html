@@ -1,0 +1,117 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}{{ track.title }} - {{ track.musician.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-page">
+    <div class="back-link">
+        <a href="{% url 'music:track_list' %}" class="btnSecondary">
+            ← Назад к трекам
+        </a>
+    </div>
+
+    <div class="detail-card">
+        <div class="detail-image">
+            {% if track.cover_image %}
+                <img src="{{ track.cover_image.url }}" alt="{{ track.title }}">
+            {% else %}
+                <img src="{% static 'blockPhoto.png' %}" alt="Нет обложки">
+            {% endif %}
+        </div>
+
+        <div class="detail-info">
+            <h1>{{ track.title }}</h1>
+            
+            <div class="info-row">
+                <span class="info-label">Исполнитель</span>
+                <span class="info-value">
+                    <a href="{% url 'music:musician_detail' track.musician.pk %}">{{ track.musician.name }}</a>
+                </span>
+            </div>
+            
+            {% if track.album %}
+            <div class="info-row">
+                <span class="info-label">Альбом</span>
+                <span class="info-value">
+                    <a href="{% url 'music:album_detail' track.album.pk %}">{{ track.album.title }}</a>
+                </span>
+            </div>
+            {% endif %}
+            
+            {% if track.genre %}
+            <div class="info-row">
+                <span class="info-label">Жанр</span>
+                <span class="info-value">{{ track.get_genre_display }}</span>
+            </div>
+            {% endif %}
+            
+            {% if track.release_date %}
+            <div class="info-row">
+                <span class="info-label">Дата выхода</span>
+                <span class="info-value">{{ track.release_date|date:"d.m.Y" }}</span>
+            </div>
+            {% endif %}
+            
+            {% if track.duration %}
+            <div class="info-row">
+                <span class="info-label">Длительность</span>
+                <span class="info-value">{{ track.duration }}</span>
+            </div>
+            {% endif %}
+            
+            
+            <div class="info-row">
+                <span class="info-label">Избранное</span>
+                <span class="info-value">
+                    <form method="post" action="{% url 'music:toggle_favorite' track.pk %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="favorite-btn {% if track.is_folove %}active{% endif %}">
+                            {% if track.is_folove %}
+                                <i class="fas fa-heart"></i>
+                            {% else %}
+                                <i class="far fa-heart"></i>
+                            {% endif %}
+                        </button>
+                    </form>
+                </span>
+            </div>
+
+
+            
+            {% if track.description %}
+            <div class="info-row">
+                <span class="info-label">Описание</span>
+                <span class="info-value">{{ track.description|linebreaks }}</span>
+            </div>
+            {% endif %}
+            
+            {% if track.file %}
+            <div class="info-row audio-row">
+                <span class="info-label">Аудио</span>
+                <span class="info-value">
+                    <button class="play-this" 
+                            data-file="{{ track.file.url }}"
+                            data-title="{{ track.title }}"
+                            data-artist="{{ track.musician.name }}"
+                            data-cover="{% if track.cover_image %}{{ track.cover_image.url }}{% else %}{% static 'blockPhoto.png' %}{% endif %}">
+                        <i class="fas fa-play"></i>
+                    </button>
+                </span>
+            </div>
+            {% endif %}
+            
+            {% if user.is_superuser %}
+                <div class="detail-actions">
+                    <a href="{% url 'music:track_update' track.pk %}" class="moveIcon">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                    <a href="{% url 'music:track_delete' track.pk %}" class="moveIcon">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

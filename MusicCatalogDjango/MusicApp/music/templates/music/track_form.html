@@ -1,0 +1,48 @@
+{% extends 'music/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="formСard">
+            <h1>{{ title }}</h1>
+            
+            <form method="post" enctype="multipart/form-data" class="music-form">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="queryField">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        
+                        {% if field.name == 'cover_image' and field.value %}
+                            <div class="currentImage">
+                                <p>Текущее изображение:</p>
+                                <img src="{{ field.value.url }}" alt="Текущая обложка" class="previewImage">
+                            </div>
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                            <div class="formError">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <div class="HelpText">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <div class="formButtons">
+                    <button type="submit" class="btnPrimary">Сохранить</button>
+                    <a href="javascript:history.back()" class="btnSecondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
